@@ -47,9 +47,9 @@ const projectDetails = {
    Replace the placeholders below with your actual keys from EmailJS.
    Learn more at: https://www.emailjs.com/
 */
-const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY';
-const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID';
-const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
+const EMAILJS_PUBLIC_KEY = 'OWljgu2LXzyyOhI3u';
+const EMAILJS_SERVICE_ID = 'service_pgak4ab';
+const EMAILJS_TEMPLATE_ID = 'template_x2he1ve';
 
 // Initialize EmailJS if the public key has been configured
 if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
