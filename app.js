@@ -41,6 +41,23 @@ const projectDetails = {
   }
 };
 
+/* ====================
+   EMAILJS CONFIGURATION
+   ====================
+   Replace the placeholders below with your actual keys from EmailJS.
+   Learn more at: https://www.emailjs.com/
+*/
+const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY';
+const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID';
+const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
+
+// Initialize EmailJS if the public key has been configured
+if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
+  emailjs.init({
+    publicKey: EMAILJS_PUBLIC_KEY,
+  });
+}
+
 // Document Elements
 const sections = document.querySelectorAll('.page-section');
 const navLinks = document.querySelectorAll('.nav-link');
@@ -274,27 +291,34 @@ if (contactForm) {
     submitBtn.innerHTML = `<i data-lucide="loader" class="animate-spin"></i> Sending...`;
     if (typeof lucide !== 'undefined') lucide.createIcons();
 
-    // Real POST request to FormSubmit AJAX endpoint
-    fetch("https://formsubmit.co/ajax/vamsilakshmisatyakoppineedi@gmail.com", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({
-        Name: name,
-        Email: email,
-        Subject: subject,
-        Message: message
-      })
+    // Safety check for EmailJS SDK load
+    if (typeof emailjs === 'undefined') {
+      alert('EmailJS SDK failed to load. Please check your internet connection or the script configuration in index.html.');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnHTML;
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+      return;
+    }
+
+    // Safety check for credentials
+    if (EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY' || 
+        EMAILJS_SERVICE_ID === 'YOUR_SERVICE_ID' || 
+        EMAILJS_TEMPLATE_ID === 'YOUR_TEMPLATE_ID') {
+      alert('EmailJS is not fully configured yet. Please configure the EMAILJS_PUBLIC_KEY, EMAILJS_SERVICE_ID, and EMAILJS_TEMPLATE_ID constants at the top of app.js with your EmailJS credentials.');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnHTML;
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+      return;
+    }
+
+    // Send email using EmailJS
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      from_name: name,
+      from_email: email,
+      subject: subject,
+      message: message
     })
     .then(response => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return response.json();
-    })
-    .then(data => {
       // Clear form inputs
       contactForm.reset();
       submitBtn.disabled = false;
@@ -310,7 +334,7 @@ if (contactForm) {
       }, 4000);
     })
     .catch(error => {
-      console.error("FormSubmit Error:", error);
+      console.error("EmailJS Error:", error);
       alert("There was an issue sending your message. Please try again or email directly.");
       submitBtn.disabled = false;
       submitBtn.innerHTML = originalBtnHTML;
